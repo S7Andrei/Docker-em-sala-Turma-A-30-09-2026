@@ -1,0 +1,20 @@
+PS C:\Users\conta\Downloads\turma-a> $pastaSite = (Resolve-Path .\site).Path
+PS C:\Users\conta\Downloads\turma-a> docker run -d --name docker-a -p 127.0.0.1:8082:80 --mount "type=bind,source=$pastaSite,target=/usr/share/nginx/html,readonly" nginx:alpine
+778607b5e9c42ec266aaf7342a4083fa7cf3fc005cdd5adb2deae721b1dc11f1
+PS C:\Users\conta\Downloads\turma-a> docker stop docker-a
+docker-a
+PS C:\Users\conta\Downloads\turma-a> docker rm docker-a
+docker-a
+PS C:\Users\conta\Downloads\turma-a> $pastaSite = (Resolve-Path .\site).Path
+PS C:\Users\conta\Downloads\turma-a> docker run -d --name docker-a -p 127.0.0.1:8092:80 --mount "type=bind,source=$pastaSite,target=/usr/share/nginx/html,readonly" nginx:alpine
+4ff3e70635bc3a7c958139f04dd48f01b1a26d8a2eae391fd2afe8f24f94fe02
+PS C:\Users\conta\Downloads\turma-a> docker stop docker-a
+docker-a
+PS C:\Users\conta\Downloads\turma-a> docker inspect --format '{{.State.Status}}' docker-a
+exited
+PS C:\Users\conta\Downloads\turma-a> docker ps -a --filter name=docker-a
+CONTAINER ID   IMAGE          COMMAND                  CREATED              STATUS                      PORTS     NAMES
+4ff3e70635bc   nginx:alpine   "/docker-entrypoint.…"   About a minute ago   Exited (0) 13 seconds ago             docker-a
+PS C:\Users\conta\Downloads\turma-a>
+PS C:\Users\conta\Downloads\turma-a> docker rm docker-a
+docker-a
