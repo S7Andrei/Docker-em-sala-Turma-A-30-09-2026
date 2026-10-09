@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agenda do campus</title>
+  <style>
+    body { font: 17px system-ui, sans-serif; max-width: 780px; margin: 40px auto; padding: 0 20px; line-height: 1.6; background: #f5f7fa; color: #203047; }
+    main { background: white; border: 1px solid #d6deea; padding: 28px; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 24px; }
+    td, th { text-align: left; padding: 8px; border-bottom: 1px solid #d6deea; }
+    .falha { color: #a3261b; font-weight: 600; }
+    .ok { color: #1d6b35; font-weight: 600; }
+    input, select, button { font: inherit; padding: 6px 10px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Agenda do campus</h1>
+    <p>Turma A. Estado da API: <span id="saude">consultando</span></p>
+    <h2>Eventos</h2>
+    <div id="eventos">consultando</div>
+    <h2>Inscrição</h2>
+    <form id="form">
+      <select id="evento"></select>
+      <input id="nome" placeholder="RA-CODIGO" required>
+      <button>Inscrever</button>
+    </form>
+    <p id="resultado"></p>
+    <h2>Inscrições registradas</h2>
+    <div id="inscricoes">consultando</div>
+  </main>
+  <script>
+    const falha = (alvo, resposta) => {
+      alvo.innerHTML = '<span class="falha">Falha HTTP ' + resposta.status + ' em ' + resposta.url + '</span>'
+    }
+    const consultarRegistros = async () => {
+      const inscricoes = await fetch('/api/inscricoes')
+      const alvoInscricoes = document.querySelector('#inscricoes')
+      if (!inscricoes.ok) return falha(alvoInscricoes, inscricoes)
+      const lista = await inscricoes.json()
+      alvoInscricoes.textContent = lista.length === 0 ? 'Nenhuma inscrição.'
+        : lista.map(i => i.nome + ' no evento ' + i.eventoId + ' em ' + i.criadaEm).join(' | ')
+    }
+    const consultar = async () => {
+      consultarRegistros()
+      const saude = await fetch('/api/saude')
+      const alvoSaude = document.querySelector('#saude')
+      if (saude.ok) alvoSaude.innerHTML = '<span class="ok">ok</span>'
+      else falha(alvoSaude, saude)
+
+      const eventos = await fetch('/api/eventos')
+      const alvoEventos = document.querySelector('#eventos')
+      if (!eventos.ok) return falha(alvoEventos, eventos)
+      const dados = await eventos.json()
+      alvoEventos.innerHTML = '<table><tr><th>Evento</th><th>Vagas</th><th>Inscritos</th><th>Restantes</th></tr>'
+        + dados.itens.map(e => '<tr><td>' + e.nome + '</td><td>' + e.vagas + '</td><td>' + e.inscritos + '</td><td>' + e.restantes + '</td></tr>').join('')
+        + '</table>'
+      document.querySelector('#evento').innerHTML = dados.itens.map(e => '<option value="' + e.id + '">' + e.nome + '</option>').join('')
+    }
+    document.querySelector('#form').onsubmit = async evento => {
+      evento.preventDefault()
+      const resposta = await fetch('/api/inscricoes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventoId: Number(document.querySelector('#evento').value), nome: document.querySelector('#nome').value })
+      })
+      const alvo = document.querySelector('#resultado')
+      if (resposta.ok) alvo.innerHTML = '<span class="ok">Inscrição registrada</span>'
+      else falha(alvo, resposta)
+      consultar()
+    }
+    consultar()
+  </script>
+</body>
+</html>

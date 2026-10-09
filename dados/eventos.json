@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "nome": "Oficina de Git",
+    "vagas": 12
+  },
+  {
+    "id": 2,
+    "nome": "Laboratório de APIs",
+    "vagas": 8
+  },
+  {
+    "id": 3,
+    "nome": "Encontro de projetos",
+    "vagas": 20
+  }
+]

@@ -1,0 +1,22 @@
+services:
+  api:
+    build: ./api
+    environment:
+      PORT: "4000"
+    volumes:
+      - type: bind
+        source: ./dados
+        target: /app/dados
+        read_only: true
+      - registros:/app/registros
+  portal:
+    build: ./portal
+    ports:
+      - "127.0.0.1:8082:80"
+    environment:
+      API_URL: "http://api:4000"
+    depends_on:
+      - api
+
+volumes:
+  registros:

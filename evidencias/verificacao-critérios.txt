@@ -1,0 +1,4 @@
+﻿Critério1: As rotas /api/saude e /api/eventos funcionaram pelo portal e os dados foram exibidos na página.
+Critério2: Enviei uma inscrição de teste e recebi HTTP 201. O primeiro evento passou de 0 a 1 inscrito, com 11 vagas restantes.
+Critério3: Após executar docker compose down e docker compose up -d, confirmei que a inscrição continuou salva e as vagas permaneceram corretas.
+Critério4: Confirmei que somente o portal publicou a porta 127.0.0.1:8082 no computador, sem publicar a porta da API.
